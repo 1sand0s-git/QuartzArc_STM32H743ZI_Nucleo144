@@ -1,0 +1,9 @@
+QAD_GPIO.cpp:29:1:QAD_GPIO_Output::QAD_GPIO_Output(GPIO_TypeDef*, uint16_t)	48	static
+QAD_GPIO.cpp:43:1:QAD_GPIO_Output::~QAD_GPIO_Output()	16	static
+QAD_GPIO.cpp:51:6:void QAD_GPIO_Output::on()	16	static
+QAD_GPIO.cpp:59:6:void QAD_GPIO_Output::off()	16	static
+QAD_GPIO.cpp:67:6:void QAD_GPIO_Output::toggle()	16	static
+QAD_GPIO.cpp:78:27:QAD_GPIO_Output::PinState QAD_GPIO_Output::getState()	16	static
+QAD_GPIO.cpp:93:1:QAD_GPIO_Input::QAD_GPIO_Input(GPIO_TypeDef*, uint16_t)	48	static
+QAD_GPIO.cpp:107:1:QAD_GPIO_Input::~QAD_GPIO_Input()	16	static
+QAD_GPIO.cpp:114:26:QAD_GPIO_Input::PinState QAD_GPIO_Input::getState()	16	static

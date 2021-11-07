@@ -1,0 +1,15 @@
+!SESSION 2021-10-21 10:40:49.951 -----------------------------------------------
+eclipse.buildId=Version 1.7.0
+java.version=11.0.10
+java.vendor=AdoptOpenJDK
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_AU
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2021-10-21 10:41:13.034
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2021-10-21 10:41:13.096
+!MESSAGE Log4j initialized with config file C:\Users\binar\Desktop\Quartz Arc\STM32 H7N\QuartzArc_STM32_H7N\STM32_H7N\.metadata\.log4j.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2021-10-21 10:41:16.407
+!MESSAGE Started RMI Server, listening on port 41337

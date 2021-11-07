@@ -1,0 +1,18 @@
+!SESSION 2021-11-07 23:34:51.112 -----------------------------------------------
+eclipse.buildId=Version 1.7.0
+java.version=11.0.10
+java.vendor=AdoptOpenJDK
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=en_AU
+Command-line arguments:  -os win32 -ws win32 -arch x86_64
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 4 4 2021-11-07 23:35:06.433
+!MESSAGE CubeMX plugin appears to be active, Log4j initialization might be too late.
+
+!ENTRY com.st.stm32cube.ide.mcu.informationcenter 1 1 2021-11-07 23:35:06.503
+!MESSAGE Log4j initialized with config file C:\Users\binar\Desktop\Quartz Arc\QA Codebase Repos\QA_STM32H743ZINUCLEO144\QuartzArc_STM32H743ZI_Nucleo144\.metadata\.log4j.xml
+
+!ENTRY com.st.stm32cube.ide.mcu.ide 1 1 2021-11-07 23:35:08.997
+!MESSAGE Started RMI Server, listening on port 41337
+
+!ENTRY org.eclipse.cdt.core 1 0 2021-11-07 23:35:52.462
+!MESSAGE Indexed 'STM32_H7N' (125 sources, 299 headers) in 23.5 sec: 37,953 declarations; 182,612 references; 3 unresolved inclusions; 46 syntax errors; 788 unresolved names (0.36%)
