@@ -77,8 +77,8 @@ all: main-build
 main-build: STM32_H7N.elf secondary-outputs
 
 # Tool invocations
-STM32_H7N.elf: $(OBJS) $(USER_OBJS) C:\Users\binar\Desktop\Quartz\ Arc\STM32\ H7N\QuartzArc_STM32_H7N\STM32_H7N\STM32_H7N\STM32H743ZITX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "STM32_H7N.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\Users\binar\Desktop\Quartz Arc\STM32 H7N\QuartzArc_STM32_H7N\STM32_H7N\STM32_H7N\STM32H743ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="STM32_H7N.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+STM32_H7N.elf: $(OBJS) $(USER_OBJS) C:\Users\binar\Desktop\Quartz\ Arc\QA\ Codebase\ Repos\QA_STM32H743ZINUCLEO144\QuartzArc_STM32H743ZI_Nucleo144\STM32_H7N\STM32H743ZITX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-g++ -o "STM32_H7N.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m7 -T"C:\Users\binar\Desktop\Quartz Arc\QA Codebase Repos\QA_STM32H743ZINUCLEO144\QuartzArc_STM32H743ZI_Nucleo144\STM32_H7N\STM32H743ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="STM32_H7N.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

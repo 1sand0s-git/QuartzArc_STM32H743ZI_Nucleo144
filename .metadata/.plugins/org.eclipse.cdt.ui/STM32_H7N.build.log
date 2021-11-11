@@ -1,0 +1,10 @@
+17:08:25 **** Incremental Build of configuration Debug for project STM32_H7N ****
+make -j8 all 
+arm-none-eabi-size   STM32_H7N.elf 
+   text	   data	    bss	    dec	    hex	filename
+   8980	    124	   1612	  10716	   29dc	STM32_H7N.elf
+Finished building: default.size.stdout
+ 
+
+17:08:26 Build Finished. 0 errors, 0 warnings. (took 798ms)
+

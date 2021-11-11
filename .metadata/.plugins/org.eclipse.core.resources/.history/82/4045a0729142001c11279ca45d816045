@@ -1,0 +1,158 @@
+/* ----------------------------------------------------------------------- */
+/*                                                                         */
+/*   Quartz Arc                                                            */
+/*                                                                         */
+/*   STM32 H743ZI Nucleo 144                                               */
+/*                                                                         */
+/*   System: Core                                                          */
+/*   Role: System Initialization                                           */
+/*   Filename: boot.cpp                                                    */
+/*   Date: 21st October 2021                                               */
+/*   Created By: Benjamin Rosser                                           */
+/*                                                                         */
+/*   This code is covered by Creative Commons CC-BY-NC-SA license          */
+/*   (C) Copyright 2021 Benjamin Rosser                                    */
+/*                                                                         */
+/* ----------------------------------------------------------------------- */
+
+//Includes
+#include "boot.hpp"
+
+
+	//------------------------------------------
+	//------------------------------------------
+	//------------------------------------------
+
+  //------------------------------
+  //System Initialization Function
+
+
+//SystemInitialize
+//System Initialization Function
+//
+//Used to initialize CPU caches, NVIC and SysTick, as well as oscillators, PLLs, system clocks, bus clocks and some peripheral clocks.
+//Also enables all GPIOs
+//
+//Returns QA_OK if successful, or QA_Fail if initialized failed
+QA_Result SystemInitialize(void) {
+
+  //-----------------------
+  //Enable Cache & Prefetch
+  SCB_EnableICache();
+  SCB_EnableDCache();
+
+
+  //--------------------------
+  //Set NVIC Priority Grouping
+  HAL_NVIC_SetPriorityGrouping(NVIC_PRIORITYGROUP_4);
+
+
+  //------------
+	//Init SysTick
+	if (HAL_InitTick(TICK_INT_PRIORITY) != HAL_OK)
+		return QA_Fail;
+
+
+  //----------------------------------
+  //Configure Internal Power Regulator
+	HAL_PWREx_ConfigSupply(PWR_LDO_SUPPLY);
+  __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE0);
+  while (!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
+
+
+  //---------------------
+  //Configure Oscillators
+  //
+  //Configure High Speed External (HSE) oscillator to be used, and setup primary PLL to provide a 480MHz clock
+  //NOTE: HSE Oscillator provided on STM32F743ZI Nucleo144 board is an 8MHz clock signal provided by the ST-Link MCU's Master Clock Output
+  RCC_OscInitTypeDef RCC_OscInit = {0};
+  RCC_OscInit.OscillatorType = RCC_OSCILLATORTYPE_HSE; //Define which oscillator is to be configured
+  RCC_OscInit.HSEState       = RCC_HSE_BYPASS;         //Set High Speed External oscillator as system clock
+  RCC_OscInit.PLL.PLLState   = RCC_PLL_ON;             //Enable primary PLL
+  RCC_OscInit.PLL.PLLSource  = RCC_PLLSOURCE_HSE;      //Set High Speed External oscillator as PLL input clock
+
+    //Set PLL values required for 480MHz system clock
+  RCC_OscInit.PLL.PLLM       = 1;
+  RCC_OscInit.PLL.PLLN       = 120;
+  RCC_OscInit.PLL.PLLP       = 2;
+  RCC_OscInit.PLL.PLLQ       = 20;
+  RCC_OscInit.PLL.PLLR       = 2;
+  RCC_OscInit.PLL.PLLRGE     = RCC_PLL1VCIRANGE_3;
+  RCC_OscInit.PLL.PLLVCOSEL  = RCC_PLL1VCOWIDE;
+  RCC_OscInit.PLL.PLLFRACN   = 0;
+
+  if (HAL_RCC_OscConfig(&RCC_OscInit) != HAL_OK) {     //Initialize Oscillators using values in init structure
+    return QA_Fail;
+  }
+
+
+  //-------------------
+  //Enable SysCfg Clock
+  __HAL_RCC_SYSCFG_CLK_ENABLE();
+
+
+  //--------------------------
+  //Configure CPU & Bus Clocks
+  RCC_ClkInitTypeDef RCC_ClkInit = {0};
+  RCC_ClkInit.ClockType      = RCC_CLOCKTYPE_HCLK |       //Define which clocks are to be configured (HCLK, SYSCLK, PCLK1, PCLK, D3PCLK1, D1PCLK1)
+  		                         RCC_CLOCKTYPE_SYSCLK |
+  		                         RCC_CLOCKTYPE_PCLK1 |
+															 RCC_CLOCKTYPE_PCLK2 |
+															 RCC_CLOCKTYPE_D3PCLK1 |
+															 RCC_CLOCKTYPE_D1PCLK1;
+  RCC_ClkInit.SYSCLKSource   = RCC_SYSCLKSOURCE_PLLCLK;   //Set primary PLL as system clock source
+
+  RCC_ClkInit.SYSCLKDivider  = RCC_SYSCLK_DIV1;           //Set clock divider for CPU and CPU Systick clocks.
+                                                          //DIV 1 provides a frequency of 480MHz
+
+  RCC_ClkInit.AHBCLKDivider  = RCC_HCLK_DIV2;             //Set clock divider for AXI Peripheral clocks, as well as host bus clocks
+                                                          //for AHB1, AHB2, AHB3 and AHB4
+                                                          //DIV 2 provides a frequency of 240MHz
+
+  RCC_ClkInit.APB1CLKDivider = RCC_HCLK_DIV2;             //Set clock divider for peripheral bus 1 clock (APB1)
+                                                          //DIV2 provides a frequency of 120MHz
+                                                          //NOTE: APB1 timer clocks are clock doubled, providing APB1 timers with 240MHz clocks
+
+  RCC_ClkInit.APB2CLKDivider = RCC_HCLK_DIV2;             //Set clock divider for peripheral bus 2 clock (APB2)
+                                                          //DIV2 provides a frequency of 120MHz
+                                                          //NOTE: APB2 timer clocks are clock doubled, providing APB2 timers with 240MHz clocks
+
+  RCC_ClkInit.APB3CLKDivider = RCC_HCLK_DIV2;             //Set clock divider for peripheral bus 3 clock (APB3)
+                                                          //DIV2 provides a frequency of 120MHz
+
+  RCC_ClkInit.APB4CLKDivider = RCC_HCLK_DIV2;             //Set clock divider for peripheral bus 4 clock (APB4)
+                                                          //DIV2 provides a frequency of 120MHz
+
+  if (HAL_RCC_ClockConfig(&RCC_ClkInit, FLASH_LATENCY_4) != HAL_OK) {  //Initialize system clocks using required values,
+  	                                                                   //and setting Flash Latency to 4 cycles
+  	return QA_Fail;
+  }
+
+
+  //------------------
+  //Enable GPIO Clocks
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+  __HAL_RCC_GPIOC_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOE_CLK_ENABLE();
+  __HAL_RCC_GPIOF_CLK_ENABLE();
+  __HAL_RCC_GPIOG_CLK_ENABLE();
+  __HAL_RCC_GPIOH_CLK_ENABLE();
+  __HAL_RCC_GPIOI_CLK_ENABLE();
+  __HAL_RCC_GPIOJ_CLK_ENABLE();
+  __HAL_RCC_GPIOK_CLK_ENABLE();
+
+
+  //-----------------
+  //Enable DMA Clocks
+  __HAL_RCC_DMA1_CLK_ENABLE();
+  __HAL_RCC_DMA2_CLK_ENABLE();
+  __HAL_RCC_BDMA_CLK_ENABLE();
+
+  //Return
+  return QA_OK;
+}
+
+
+

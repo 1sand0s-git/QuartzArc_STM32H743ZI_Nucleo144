@@ -29,6 +29,11 @@
 
 //SystemInitialize
 //System Initialization Function
+//
+//Used to initialize CPU caches, NVIC and SysTick, as well as oscillators, PLLs, system clocks, bus clocks and some peripheral clocks.
+//Also enables all GPIOs
+//
+//Returns QA_OK if successful, or QA_Fail if initialized failed
 QA_Result SystemInitialize(void) {
 
   //-----------------------
@@ -57,11 +62,16 @@ QA_Result SystemInitialize(void) {
 
   //---------------------
   //Configure Oscillators
+  //
+  //Configure High Speed External (HSE) oscillator to be used, and setup primary PLL to provide a 480MHz clock
+  //NOTE: HSE Oscillator provided on STM32F743ZI Nucleo144 board is an 8MHz clock signal provided by the ST-Link MCU's Master Clock Output
   RCC_OscInitTypeDef RCC_OscInit = {0};
-  RCC_OscInit.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-  RCC_OscInit.HSEState       = RCC_HSE_BYPASS;
-  RCC_OscInit.PLL.PLLState   = RCC_PLL_ON;
-  RCC_OscInit.PLL.PLLSource  = RCC_PLLSOURCE_HSE;
+  RCC_OscInit.OscillatorType = RCC_OSCILLATORTYPE_HSE; //Define which oscillator is to be configured
+  RCC_OscInit.HSEState       = RCC_HSE_BYPASS;         //Set High Speed External oscillator as system clock
+  RCC_OscInit.PLL.PLLState   = RCC_PLL_ON;             //Enable primary PLL
+  RCC_OscInit.PLL.PLLSource  = RCC_PLLSOURCE_HSE;      //Set High Speed External oscillator as PLL input clock
+
+    //Set PLL values required for 480MHz system clock
   RCC_OscInit.PLL.PLLM       = 1;
   RCC_OscInit.PLL.PLLN       = 120;
   RCC_OscInit.PLL.PLLP       = 2;
@@ -70,30 +80,51 @@ QA_Result SystemInitialize(void) {
   RCC_OscInit.PLL.PLLRGE     = RCC_PLL1VCIRANGE_3;
   RCC_OscInit.PLL.PLLVCOSEL  = RCC_PLL1VCOWIDE;
   RCC_OscInit.PLL.PLLFRACN   = 0;
-  if (HAL_RCC_OscConfig(&RCC_OscInit) != HAL_OK) {
+
+  if (HAL_RCC_OscConfig(&RCC_OscInit) != HAL_OK) {     //Initialize Oscillators using values in init structure
     return QA_Fail;
   }
 
 
   //-------------------
   //Enable SysCfg Clock
-//  __HAL_RCC_SYSCFG_CLK_ENABLE();
+  __HAL_RCC_SYSCFG_CLK_ENABLE();
 
 
   //--------------------------
   //Configure CPU & Bus Clocks
   RCC_ClkInitTypeDef RCC_ClkInit = {0};
-  RCC_ClkInit.ClockType      = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK |
-  		                         RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2 |
-															 RCC_CLOCKTYPE_D3PCLK1 | RCC_CLOCKTYPE_D1PCLK1;
-  RCC_ClkInit.SYSCLKSource   = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInit.SYSCLKDivider  = RCC_SYSCLK_DIV1;
-  RCC_ClkInit.AHBCLKDivider  = RCC_HCLK_DIV2;
-  RCC_ClkInit.APB1CLKDivider = RCC_HCLK_DIV2;
-  RCC_ClkInit.APB2CLKDivider = RCC_HCLK_DIV2;
-  RCC_ClkInit.APB3CLKDivider = RCC_HCLK_DIV2;
-  RCC_ClkInit.APB4CLKDivider = RCC_HCLK_DIV2;
-  if (HAL_RCC_ClockConfig(&RCC_ClkInit, FLASH_LATENCY_4) != HAL_OK) {
+  RCC_ClkInit.ClockType      = RCC_CLOCKTYPE_HCLK |       //Define which clocks are to be configured (HCLK, SYSCLK, PCLK1, PCLK, D3PCLK1, D1PCLK1)
+  		                         RCC_CLOCKTYPE_SYSCLK |
+  		                         RCC_CLOCKTYPE_PCLK1 |
+															 RCC_CLOCKTYPE_PCLK2 |
+															 RCC_CLOCKTYPE_D3PCLK1 |
+															 RCC_CLOCKTYPE_D1PCLK1;
+  RCC_ClkInit.SYSCLKSource   = RCC_SYSCLKSOURCE_PLLCLK;   //Set primary PLL as system clock source
+
+  RCC_ClkInit.SYSCLKDivider  = RCC_SYSCLK_DIV1;           //Set clock divider for CPU and CPU Systick clocks.
+                                                          //DIV 1 provides a frequency of 480MHz
+
+  RCC_ClkInit.AHBCLKDivider  = RCC_HCLK_DIV2;             //Set clock divider for AXI Peripheral clocks, as well as host bus clocks
+                                                          //for AHB1, AHB2, AHB3 and AHB4
+                                                          //DIV 2 provides a frequency of 240MHz
+
+  RCC_ClkInit.APB1CLKDivider = RCC_HCLK_DIV2;             //Set clock divider for peripheral bus 1 clock (APB1)
+                                                          //DIV2 provides a frequency of 120MHz
+                                                          //NOTE: APB1 timer clocks are clock doubled, providing APB1 timers with 240MHz clocks
+
+  RCC_ClkInit.APB2CLKDivider = RCC_HCLK_DIV2;             //Set clock divider for peripheral bus 2 clock (APB2)
+                                                          //DIV2 provides a frequency of 120MHz
+                                                          //NOTE: APB2 timer clocks are clock doubled, providing APB2 timers with 240MHz clocks
+
+  RCC_ClkInit.APB3CLKDivider = RCC_HCLK_DIV2;             //Set clock divider for peripheral bus 3 clock (APB3)
+                                                          //DIV2 provides a frequency of 120MHz
+
+  RCC_ClkInit.APB4CLKDivider = RCC_HCLK_DIV2;             //Set clock divider for peripheral bus 4 clock (APB4)
+                                                          //DIV2 provides a frequency of 120MHz
+
+  if (HAL_RCC_ClockConfig(&RCC_ClkInit, FLASH_LATENCY_4) != HAL_OK) {  //Initialize system clocks using required values,
+  	                                                                   //and setting Flash Latency to 4 cycles
   	return QA_Fail;
   }
 
@@ -113,6 +144,12 @@ QA_Result SystemInitialize(void) {
   __HAL_RCC_GPIOK_CLK_ENABLE();
 
 
+  //-----------------
+  //Enable DMA Clocks
+  __HAL_RCC_DMA1_CLK_ENABLE();
+  __HAL_RCC_DMA2_CLK_ENABLE();
+  __HAL_RCC_MDMA_CLK_ENABLE();
+  __HAL_RCC_BDMA_CLK_ENABLE();
 
   //Return
   return QA_OK;

@@ -1,1 +1,1 @@
-boot.cpp:29:11:QA_Result SystemInitialize()	176	static,ignoring_inline_asm
+boot.cpp:37:11:QA_Result SystemInitialize()	200	static,ignoring_inline_asm
