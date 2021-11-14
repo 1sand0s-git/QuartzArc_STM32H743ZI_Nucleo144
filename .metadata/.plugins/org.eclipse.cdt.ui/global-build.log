@@ -347,3 +347,21 @@ arm-none-eabi-size   STM32_H7N.elf
    8980	    124	   1612	  10716	   29dc	STM32_H7N.elf
 Finished building: default.size.stdout
  
+13:10:23 **** Build of configuration Debug for project STM32_H7N ****
+make -j8 all 
+arm-none-eabi-g++ "../QA_Drivers/QAD_GPIO.cpp" -mcpu=cortex-m7 -std=gnu++14 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32H743xx -c -I../Drivers/STM32H7xx_HAL_Driver/Inc -I../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../Drivers/CMSIS/Include -I../Core -I../QA_Drivers -I../QA_Systems -I../QA_Tools -O0 -ffunction-sections -fdata-sections -fno-exceptions -fno-rtti -fno-use-cxa-atexit -Wall -fstack-usage -MMD -MP -MF"QA_Drivers/QAD_GPIO.d" -MT"QA_Drivers/QAD_GPIO.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "QA_Drivers/QAD_GPIO.o"
+arm-none-eabi-g++ "../Core/main.cpp" -mcpu=cortex-m7 -std=gnu++14 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32H743xx -c -I../Drivers/STM32H7xx_HAL_Driver/Inc -I../Drivers/STM32H7xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32H7xx/Include -I../Drivers/CMSIS/Include -I../Core -I../QA_Drivers -I../QA_Systems -I../QA_Tools -O0 -ffunction-sections -fdata-sections -fno-exceptions -fno-rtti -fno-use-cxa-atexit -Wall -fstack-usage -MMD -MP -MF"Core/main.d" -MT"Core/main.o" --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -o "Core/main.o"
+arm-none-eabi-g++ -o "STM32_H7N.elf" @"objects.list"   -mcpu=cortex-m7 -T"C:\Users\binar\Desktop\Quartz Arc\QA Codebase Repos\QA_STM32H743ZINUCLEO144\QuartzArc_STM32H743ZI_Nucleo144\STM32_H7N\STM32H743ZITX_FLASH.ld" --specs=nosys.specs -Wl,-Map="STM32_H7N.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+Finished building target: STM32_H7N.elf
+ 
+arm-none-eabi-size   STM32_H7N.elf 
+arm-none-eabi-objdump -h -S  STM32_H7N.elf  > "STM32_H7N.list"
+arm-none-eabi-objcopy  -O binary  STM32_H7N.elf  "STM32_H7N.bin"
+   text	   data	    bss	    dec	    hex	filename
+   8980	    124	   1612	  10716	   29dc	STM32_H7N.elf
+Finished building: default.size.stdout
+ 
+Finished building: STM32_H7N.bin
+ 
+Finished building: STM32_H7N.list
+ 
